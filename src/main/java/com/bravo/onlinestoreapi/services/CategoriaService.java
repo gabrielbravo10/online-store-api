@@ -1,11 +1,10 @@
 package com.bravo.onlinestoreapi.services;
 
 import com.bravo.onlinestoreapi.entities.Categoria;
+import com.bravo.onlinestoreapi.exceptions.ObjectNotFoundException;
 import com.bravo.onlinestoreapi.repositories.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class CategoriaService {
@@ -13,8 +12,8 @@ public class CategoriaService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    public Categoria buscar(Integer id) {
-        Optional<Categoria> categoria = categoriaRepository.findById(id);
-        return categoria.orElse(null);
+    public Categoria find(Integer id) {
+        return categoriaRepository.findById(id).orElseThrow(() ->
+                new ObjectNotFoundException("Objeto nao encontrado! Id: " + id + ", Tipo: " + Categoria.class.getName()));
     }
 }
