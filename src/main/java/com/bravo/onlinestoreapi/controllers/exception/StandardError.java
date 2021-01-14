@@ -1,4 +1,4 @@
-package com.bravo.onlinestoreapi.exception;
+package com.bravo.onlinestoreapi.controllers.exception;
 
 import java.io.Serializable;
 

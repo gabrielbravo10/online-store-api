@@ -1,6 +1,6 @@
-package com.bravo.onlinestoreapi.exception;
+package com.bravo.onlinestoreapi.controllers.exception;
 
-import com.bravo.onlinestoreapi.exceptions.ObjectNotFoundException;
+import com.bravo.onlinestoreapi.services.exceptions.ObjectNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

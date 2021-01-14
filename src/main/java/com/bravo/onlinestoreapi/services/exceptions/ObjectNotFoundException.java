@@ -1,4 +1,4 @@
-package com.bravo.onlinestoreapi.exceptions;
+package com.bravo.onlinestoreapi.services.exceptions;
 
 public class ObjectNotFoundException extends RuntimeException{
 

@@ -1,13 +1,8 @@
 package com.bravo.onlinestoreapi;
 
-import com.bravo.onlinestoreapi.entities.Categoria;
-import com.bravo.onlinestoreapi.entities.Cidade;
-import com.bravo.onlinestoreapi.entities.Estado;
-import com.bravo.onlinestoreapi.entities.Produto;
-import com.bravo.onlinestoreapi.repositories.CategoriaRepository;
-import com.bravo.onlinestoreapi.repositories.CidadeRepository;
-import com.bravo.onlinestoreapi.repositories.EstadoRepository;
-import com.bravo.onlinestoreapi.repositories.ProdutoRepository;
+import com.bravo.onlinestoreapi.entities.*;
+import com.bravo.onlinestoreapi.entities.enums.TipoCliente;
+import com.bravo.onlinestoreapi.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,14 +17,18 @@ public class OnlineStoreApiApplication implements CommandLineRunner {
 	ProdutoRepository produtoRepository;
 	EstadoRepository estadoRepository;
 	CidadeRepository cidadeRepository;
+	ClienteRepository clienteRepository;
+	EnderecoRepository enderecoRepository;
 
 	@Autowired
-	public OnlineStoreApiApplication(CategoriaRepository categoriaRepository, ProdutoRepository produtoRepository,
-									 EstadoRepository estadoRepository, CidadeRepository cidadeRepository) {
+	public OnlineStoreApiApplication(CategoriaRepository categoriaRepository, ProdutoRepository produtoRepository, EstadoRepository estadoRepository,
+									 CidadeRepository cidadeRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository) {
 		this.categoriaRepository = categoriaRepository;
 		this.produtoRepository = produtoRepository;
 		this.estadoRepository = estadoRepository;
 		this.cidadeRepository = cidadeRepository;
+		this.clienteRepository = clienteRepository;
+		this.enderecoRepository = enderecoRepository;
 	}
 
 	public static void main(String[] args) {
@@ -38,16 +37,16 @@ public class OnlineStoreApiApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+
+		// Categoria and Produto added
 		Categoria cat1 = new Categoria(null, "Informatica");
 		Categoria cat2 = new Categoria(null, "Escritorio");
-
 		Produto p1 = new Produto(null, "Computador", 2000.00);
 		Produto p2 = new Produto(null, "Impressora", 800.00);
 		Produto p3 = new Produto(null, "Mouse", 80.00);
 
 		cat1.getProdutos().addAll(Arrays.asList(p1, p2, p3));
 		cat2.getProdutos().addAll(Arrays.asList(p2));
-
 		p1.getCategorias().addAll(Arrays.asList(cat1));
 		p2.getCategorias().addAll(Arrays.asList(cat1, cat2));
 		p3.getCategorias().addAll(Arrays.asList(cat1));
@@ -55,17 +54,32 @@ public class OnlineStoreApiApplication implements CommandLineRunner {
 		categoriaRepository.saveAll(Arrays.asList(cat1, cat2));
 		produtoRepository.saveAll(Arrays.asList(p1, p2, p3));
 
-		Estado est1 = new Estado(null, "Minas Gerais");
-		Estado est2 = new Estado(null, "Sao Paulo");
+		// Estado and Cidade added
+		Estado estadoMG = new Estado(null, "Minas Gerais");
+		Estado estadoSP = new Estado(null, "Sao Paulo");
+		Cidade cidadeUberlandia = new Cidade(null, "Uberlandia", estadoMG);
+		Cidade cidadeSP = new Cidade(null, "Sao Paulo", estadoSP);
+		Cidade cidadeCampinas = new Cidade(null, "Campinas", estadoSP);
 
-		Cidade c1 = new Cidade(null, "Uberlandia", est1);
-		Cidade c2 = new Cidade(null, "Sao Paulo", est2);
-		Cidade c3 = new Cidade(null, "Campinas", est2);
+		estadoMG.getCidades().addAll(Arrays.asList(cidadeUberlandia));
+		estadoSP.getCidades().addAll(Arrays.asList(cidadeSP, cidadeCampinas));
 
-		est1.getCidades().addAll(Arrays.asList(c1));
-		est2.getCidades().addAll(Arrays.asList(c2, c3));
+		estadoRepository.saveAll(Arrays.asList(estadoMG, estadoSP));
+		cidadeRepository.saveAll(Arrays.asList(cidadeUberlandia, cidadeSP, cidadeCampinas));
 
-		estadoRepository.saveAll(Arrays.asList(est1, est2));
-		cidadeRepository.saveAll(Arrays.asList(c1, c2, c3));
+		// Cliente, Telefones, Enderecos added
+		Cliente clienteMaria = new Cliente(null, "Maria Silva", "maria@gmail.com", "36378912377", TipoCliente.PESSOAFISICA);
+
+		clienteMaria.getTelefones().addAll(Arrays.asList("27363323", "93838393"));
+
+		Endereco endereco1 = new Endereco(null, "Rua Flores", "300", "Apto 303",
+				"Jardim", "38220834", clienteMaria, cidadeUberlandia);
+		Endereco endereco2 = new Endereco(null, "Avenida Matos", "105", "Sala 800",
+				"Centro", "38777012", clienteMaria, cidadeSP);
+
+		clienteMaria.getEnderecos().addAll(Arrays.asList(endereco1, endereco2));
+
+		clienteRepository.saveAll(Arrays.asList(clienteMaria));
+		enderecoRepository.saveAll(Arrays.asList(endereco1, endereco2));
 	}
 }

@@ -1,7 +1,7 @@
 package com.bravo.onlinestoreapi.services;
 
 import com.bravo.onlinestoreapi.entities.Categoria;
-import com.bravo.onlinestoreapi.exceptions.ObjectNotFoundException;
+import com.bravo.onlinestoreapi.services.exceptions.ObjectNotFoundException;
 import com.bravo.onlinestoreapi.repositories.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
