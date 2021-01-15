@@ -1,6 +1,7 @@
 package com.bravo.onlinestoreapi;
 
 import com.bravo.onlinestoreapi.entities.*;
+import com.bravo.onlinestoreapi.entities.enums.EstadoPagamento;
 import com.bravo.onlinestoreapi.entities.enums.TipoCliente;
 import com.bravo.onlinestoreapi.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,27 +9,33 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 @SpringBootApplication
 public class OnlineStoreApiApplication implements CommandLineRunner {
 
-	CategoriaRepository categoriaRepository;
-	ProdutoRepository produtoRepository;
-	EstadoRepository estadoRepository;
-	CidadeRepository cidadeRepository;
-	ClienteRepository clienteRepository;
-	EnderecoRepository enderecoRepository;
+	private CategoriaRepository categoriaRepository;
+	private ProdutoRepository produtoRepository;
+	private EstadoRepository estadoRepository;
+	private CidadeRepository cidadeRepository;
+	private ClienteRepository clienteRepository;
+	private EnderecoRepository enderecoRepository;
+	private PedidoRepository pedidoRepository;
+	private PagamentoRepository pagamentoRepository;
 
 	@Autowired
 	public OnlineStoreApiApplication(CategoriaRepository categoriaRepository, ProdutoRepository produtoRepository, EstadoRepository estadoRepository,
-									 CidadeRepository cidadeRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository) {
+									 CidadeRepository cidadeRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository,
+									 PedidoRepository pedidoRepository, PagamentoRepository pagamentoRepository) {
 		this.categoriaRepository = categoriaRepository;
 		this.produtoRepository = produtoRepository;
 		this.estadoRepository = estadoRepository;
 		this.cidadeRepository = cidadeRepository;
 		this.clienteRepository = clienteRepository;
 		this.enderecoRepository = enderecoRepository;
+		this.pedidoRepository = pedidoRepository;
+		this.pagamentoRepository = pagamentoRepository;
 	}
 
 	public static void main(String[] args) {
@@ -81,5 +88,21 @@ public class OnlineStoreApiApplication implements CommandLineRunner {
 
 		clienteRepository.saveAll(Arrays.asList(clienteMaria));
 		enderecoRepository.saveAll(Arrays.asList(endereco1, endereco2));
+
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
+		Pedido ped1 = new Pedido(null, sdf.parse("30/09/2020 10:32"), clienteMaria, endereco1);
+		Pedido ped2 = new Pedido(null, sdf.parse("10/10/2020 19:12"), clienteMaria, endereco2);
+
+		Pagamento pagto1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, ped1, 6);
+		ped1.setPagamento(pagto1);
+
+		Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf.parse("20/10/2020 00:00"), null);
+		ped2.setPagamento(pagto2);
+
+		clienteMaria.getPedidos().addAll(Arrays.asList(ped1, ped2));
+
+		pedidoRepository.saveAll(Arrays.asList(ped1, ped2));
+		pagamentoRepository.saveAll(Arrays.asList(pagto1, pagto2));
 	}
 }
