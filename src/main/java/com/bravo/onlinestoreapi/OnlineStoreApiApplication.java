@@ -23,11 +23,12 @@ public class OnlineStoreApiApplication implements CommandLineRunner {
 	private EnderecoRepository enderecoRepository;
 	private PedidoRepository pedidoRepository;
 	private PagamentoRepository pagamentoRepository;
+	private ItemPedidoRepository itemPedidoRepository;
 
 	@Autowired
 	public OnlineStoreApiApplication(CategoriaRepository categoriaRepository, ProdutoRepository produtoRepository, EstadoRepository estadoRepository,
 									 CidadeRepository cidadeRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository,
-									 PedidoRepository pedidoRepository, PagamentoRepository pagamentoRepository) {
+									 PedidoRepository pedidoRepository, PagamentoRepository pagamentoRepository, ItemPedidoRepository itemPedidoRepository) {
 		this.categoriaRepository = categoriaRepository;
 		this.produtoRepository = produtoRepository;
 		this.estadoRepository = estadoRepository;
@@ -36,6 +37,7 @@ public class OnlineStoreApiApplication implements CommandLineRunner {
 		this.enderecoRepository = enderecoRepository;
 		this.pedidoRepository = pedidoRepository;
 		this.pagamentoRepository = pagamentoRepository;
+		this.itemPedidoRepository = itemPedidoRepository;
 	}
 
 	public static void main(String[] args) {
@@ -89,6 +91,7 @@ public class OnlineStoreApiApplication implements CommandLineRunner {
 		clienteRepository.saveAll(Arrays.asList(clienteMaria));
 		enderecoRepository.saveAll(Arrays.asList(endereco1, endereco2));
 
+		// Pedido, Pagamento added
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 		Pedido ped1 = new Pedido(null, sdf.parse("30/09/2020 10:32"), clienteMaria, endereco1);
@@ -96,7 +99,6 @@ public class OnlineStoreApiApplication implements CommandLineRunner {
 
 		Pagamento pagto1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, ped1, 6);
 		ped1.setPagamento(pagto1);
-
 		Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf.parse("20/10/2020 00:00"), null);
 		ped2.setPagamento(pagto2);
 
@@ -104,5 +106,20 @@ public class OnlineStoreApiApplication implements CommandLineRunner {
 
 		pedidoRepository.saveAll(Arrays.asList(ped1, ped2));
 		pagamentoRepository.saveAll(Arrays.asList(pagto1, pagto2));
+
+		// ItemPedido added
+
+		ItemPedido ip1 = new ItemPedido(ped1, p1, 0.00, 1, 2000.00);
+		ItemPedido ip2 = new ItemPedido(ped1, p3, 0.00, 2, 80.00);
+		ItemPedido ip3 = new ItemPedido(ped2, p2, 100.00, 1, 800.00);
+
+		ped1.getItens().addAll(Arrays.asList(ip1, ip2));
+		ped2.getItens().addAll(Arrays.asList(ip3));
+
+		p1.getItens().addAll(Arrays.asList(ip1));
+		p2.getItens().addAll(Arrays.asList(ip3));
+		p3.getItens().addAll(Arrays.asList(ip2));
+
+		itemPedidoRepository.saveAll(Arrays.asList(ip1, ip2, ip3));
 	}
 }
