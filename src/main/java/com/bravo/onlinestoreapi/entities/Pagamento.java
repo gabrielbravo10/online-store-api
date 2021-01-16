@@ -1,6 +1,7 @@
 package com.bravo.onlinestoreapi.entities;
 
 import com.bravo.onlinestoreapi.entities.enums.EstadoPagamento;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,6 +18,7 @@ public  abstract class Pagamento implements Serializable {
 
     private Integer estadoPagamento;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "pedido_id")
     @MapsId
