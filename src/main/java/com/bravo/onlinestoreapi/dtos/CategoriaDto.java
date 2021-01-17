@@ -7,7 +7,6 @@ import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 public class CategoriaDto implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     private Integer id;

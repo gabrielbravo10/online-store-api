@@ -32,9 +32,9 @@ public class CategoriaController {
     @RequestMapping(value = "/page", method = RequestMethod.GET)
     public ResponseEntity<Page<CategoriaDto>> findPage(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "linesPerPage", defaultValue = "24")Integer linesPerPage,
-            @RequestParam(value = "direction", defaultValue = "ASC")String direction,
-            @RequestParam(value = "orderBy", defaultValue = "nome")String orderBy
+            @RequestParam(value = "linesPerPage", defaultValue = "24") Integer linesPerPage,
+            @RequestParam(value = "direction", defaultValue = "ASC") String direction,
+            @RequestParam(value = "orderBy", defaultValue = "nome") String orderBy
     ) {
         Page<Categoria> categorias = categoriaService.findPage(page, linesPerPage, direction, orderBy);
         Page<CategoriaDto> categoriaDtos = categorias.map(cat -> new CategoriaDto(cat));
@@ -72,8 +72,4 @@ public class CategoriaController {
         categoriaService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
-
 }

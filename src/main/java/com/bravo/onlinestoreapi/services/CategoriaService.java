@@ -20,13 +20,13 @@ public class CategoriaService {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
+    public List<Categoria> findAll() {
+        return categoriaRepository.findAll();
+    }
+
     public Page<Categoria> findPage(Integer page, Integer linesPerPage, String direction, String orderBy) {
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
         return categoriaRepository.findAll(pageRequest);
-    }
-
-    public List<Categoria> findAll() {
-        return categoriaRepository.findAll();
     }
 
     public Categoria find(Integer id) {
@@ -41,8 +41,9 @@ public class CategoriaService {
     }
 
     public Categoria update(Categoria categoria) {
-        find(categoria.getId());
-        return categoriaRepository.save(categoria);
+        Categoria newCategoria = find(categoria.getId());
+        updateCategoria(newCategoria, categoria);
+        return categoriaRepository.save(newCategoria);
     }
 
     public void delete(Integer id) {
@@ -56,5 +57,9 @@ public class CategoriaService {
 
     public Categoria dtoToCategoria(CategoriaDto categoriaDto) {
         return new Categoria(categoriaDto.getId(), categoriaDto.getNome());
+    }
+
+    private void updateCategoria(Categoria newCategoria, Categoria categoria) {
+        newCategoria.setNome(categoria.getNome());
     }
 }
