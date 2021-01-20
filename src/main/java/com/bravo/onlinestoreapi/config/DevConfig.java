@@ -1,6 +1,8 @@
 package com.bravo.onlinestoreapi.config;
 
 import com.bravo.onlinestoreapi.services.DBService;
+import com.bravo.onlinestoreapi.services.EmailService;
+import com.bravo.onlinestoreapi.services.SmptEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -27,5 +29,10 @@ public class DevConfig {
         }
         dbService.instanciatedTestDatabase();
         return true;
+    }
+
+    @Bean
+    public EmailService emailService() {
+        return new SmptEmailService();
     }
 }
