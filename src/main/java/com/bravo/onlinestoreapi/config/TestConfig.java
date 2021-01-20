@@ -1,6 +1,8 @@
 package com.bravo.onlinestoreapi.config;
 
 import com.bravo.onlinestoreapi.services.DBService;
+import com.bravo.onlinestoreapi.services.EmailService;
+import com.bravo.onlinestoreapi.services.MockMailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,5 +21,11 @@ public class TestConfig {
     public boolean instanciateDatabase() throws ParseException {
         dbService.instanciatedTestDatabase();
         return true;
+    }
+
+
+    @Bean
+    public EmailService emailService() {
+        return new MockMailService();
     }
 }
