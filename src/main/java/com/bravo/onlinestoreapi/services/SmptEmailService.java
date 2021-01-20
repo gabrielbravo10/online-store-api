@@ -5,6 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+
+import javax.mail.internet.MimeMessage;
 
 public class SmptEmailService extends AbstractEmailService {
 
@@ -13,10 +16,20 @@ public class SmptEmailService extends AbstractEmailService {
     @Autowired
     private MailSender mailSender;
 
+    @Autowired
+    private JavaMailSender javaMailSender;
+
     @Override
     public void sendEmail(SimpleMailMessage simpleMailMessage) {
-        LOG.info("enviando email...");
+        LOG.info("Enviando email...");
         mailSender.send(simpleMailMessage);
+        LOG.info("Email enviado");
+    }
+
+    @Override
+    public void sendHtmlEmail(MimeMessage mimeMessage) {
+        LOG.info("Enviando email...");
+        javaMailSender.send(mimeMessage);
         LOG.info("Email enviado");
     }
 }
