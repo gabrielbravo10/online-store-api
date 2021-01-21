@@ -2,7 +2,7 @@ package com.bravo.onlinestoreapi.config;
 
 import com.bravo.onlinestoreapi.services.DBService;
 import com.bravo.onlinestoreapi.services.EmailService;
-import com.bravo.onlinestoreapi.services.SmptEmailService;
+import com.bravo.onlinestoreapi.services.SmtpEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,17 +22,18 @@ public class DevConfig {
     private String strategy;
 
     @Bean
-    public boolean instanciateDatabase() throws ParseException {
+    public boolean instantiateDatabase() throws ParseException {
 
         if (!"create".equals(strategy)) {
             return false;
         }
-        dbService.instanciatedTestDatabase();
+
+        dbService.instanciateTestDatabase();
         return true;
     }
 
     @Bean
     public EmailService emailService() {
-        return new SmptEmailService();
+        return new SmtpEmailService();
     }
 }

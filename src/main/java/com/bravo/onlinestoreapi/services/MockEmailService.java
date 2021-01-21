@@ -6,9 +6,9 @@ import org.springframework.mail.SimpleMailMessage;
 
 import javax.mail.internet.MimeMessage;
 
-public class MockMailService extends AbstractEmailService {
+public class MockEmailService extends AbstractEmailService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MockMailService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MockEmailService.class);
 
     @Override
     public void sendEmail(SimpleMailMessage simpleMailMessage) {

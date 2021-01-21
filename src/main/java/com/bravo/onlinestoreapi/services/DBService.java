@@ -5,6 +5,7 @@ import com.bravo.onlinestoreapi.entities.enums.EstadoPagamento;
 import com.bravo.onlinestoreapi.entities.enums.TipoCliente;
 import com.bravo.onlinestoreapi.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -13,6 +14,9 @@ import java.util.Arrays;
 
 @Service
 public class DBService {
+
+    @Autowired
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private CategoriaRepository categoriaRepository;
     private ProdutoRepository produtoRepository;
@@ -39,7 +43,7 @@ public class DBService {
         this.itemPedidoRepository = itemPedidoRepository;
     }
 
-    public void instanciatedTestDatabase() throws ParseException {
+    public void instanciateTestDatabase() throws ParseException {
 
         // Categoria and Produto added
         Categoria cat1 = new Categoria(null, "Informatica");
@@ -72,7 +76,8 @@ public class DBService {
         cidadeRepository.saveAll(Arrays.asList(cidadeUberlandia, cidadeSP, cidadeCampinas));
 
         // Cliente, Telefones, Enderecos added
-        Cliente clienteMaria = new Cliente(null, "Maria Silva", "gabrielbravotest@gmail.com", "36378912377", TipoCliente.PESSOAFISICA);
+        Cliente clienteMaria = new Cliente(null, "Maria Silva", "gabrielbravotest@gmail.com", "36378912377",
+                TipoCliente.PESSOAFISICA, bCryptPasswordEncoder.encode("123"));
 
         clienteMaria.getTelefones().addAll(Arrays.asList("27363323", "93838393"));
 
