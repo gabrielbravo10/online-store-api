@@ -2,6 +2,7 @@ package com.bravo.onlinestoreapi.services;
 
 import com.bravo.onlinestoreapi.entities.*;
 import com.bravo.onlinestoreapi.entities.enums.EstadoPagamento;
+import com.bravo.onlinestoreapi.entities.enums.Perfil;
 import com.bravo.onlinestoreapi.entities.enums.TipoCliente;
 import com.bravo.onlinestoreapi.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,8 @@ public class DBService {
 
     @Autowired
     public DBService(CategoriaRepository categoriaRepository, ProdutoRepository produtoRepository, EstadoRepository estadoRepository,
-                                     CidadeRepository cidadeRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository,
-                                     PedidoRepository pedidoRepository, PagamentoRepository pagamentoRepository, ItemPedidoRepository itemPedidoRepository) {
+                     CidadeRepository cidadeRepository, ClienteRepository clienteRepository, EnderecoRepository enderecoRepository,
+                     PedidoRepository pedidoRepository, PagamentoRepository pagamentoRepository, ItemPedidoRepository itemPedidoRepository) {
         this.categoriaRepository = categoriaRepository;
         this.produtoRepository = produtoRepository;
         this.estadoRepository = estadoRepository;
@@ -78,18 +79,25 @@ public class DBService {
         // Cliente, Telefones, Enderecos added
         Cliente clienteMaria = new Cliente(null, "Maria Silva", "gabrielbravotest@gmail.com", "36378912377",
                 TipoCliente.PESSOAFISICA, bCryptPasswordEncoder.encode("123"));
-
         clienteMaria.getTelefones().addAll(Arrays.asList("27363323", "93838393"));
+
+        Cliente clienteAna = new Cliente(null, "Ana Costa", "gabs@gmail.com", "25683551072",
+                TipoCliente.PESSOAFISICA, bCryptPasswordEncoder.encode("123"));
+        clienteAna.addPerfil(Perfil.ADMIN);
+        clienteAna.getTelefones().addAll(Arrays.asList("98989898", "9898989898"));
 
         Endereco endereco1 = new Endereco(null, "Rua Flores", "300", "Apto 303",
                 "Jardim", "38220834", clienteMaria, cidadeUberlandia);
         Endereco endereco2 = new Endereco(null, "Avenida Matos", "105", "Sala 800",
                 "Centro", "38777012", clienteMaria, cidadeSP);
+        Endereco endereco3 = new Endereco(null, "Avenida 578", "77", null,
+                "Centro", "38777012", clienteAna, cidadeSP);
 
         clienteMaria.getEnderecos().addAll(Arrays.asList(endereco1, endereco2));
+        clienteAna.getEnderecos().addAll(Arrays.asList(endereco3));
 
-        clienteRepository.saveAll(Arrays.asList(clienteMaria));
-        enderecoRepository.saveAll(Arrays.asList(endereco1, endereco2));
+        clienteRepository.saveAll(Arrays.asList(clienteMaria, clienteAna));
+        enderecoRepository.saveAll(Arrays.asList(endereco1, endereco2, endereco3));
 
         // Pedido, Pagamento added
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
