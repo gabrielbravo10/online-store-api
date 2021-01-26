@@ -16,11 +16,6 @@ import java.util.List;
 public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
 
     @Transactional(readOnly = true)
-    @Query("SELECT DISTINCT prod FROM Produto prod INNER JOIN prod.categorias cat" +
-            " WHERE prod.nome LIKE %:nome% AND cat IN :categorias")
-    Page<Produto> search(@Param("nome") String nome, @Param("categorias") List<Categoria> categorias,
-                         Pageable pageRequest);
-
-//    Page<Produto> findDistinctByNomeContainingAndAndCategoriasIn(String nome, List<Categoria> categorias,
-//                                                                 Pageable pageRequest);
+    @Query("SELECT DISTINCT obj FROM Produto obj INNER JOIN obj.categorias cat WHERE obj.nome LIKE %:nome% AND cat IN :categorias")
+    Page<Produto> findDistinctByNomeContainingAndCategoriasIn(@Param("nome") String nome, @Param("categorias") List<Categoria> categorias, Pageable pageRequest);
 }

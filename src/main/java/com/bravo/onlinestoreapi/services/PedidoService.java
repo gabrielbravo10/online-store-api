@@ -1,5 +1,6 @@
 package com.bravo.onlinestoreapi.services;
 
+import com.bravo.onlinestoreapi.entities.Cliente;
 import com.bravo.onlinestoreapi.entities.ItemPedido;
 import com.bravo.onlinestoreapi.entities.PagamentoComBoleto;
 import com.bravo.onlinestoreapi.entities.Pedido;
@@ -7,18 +8,23 @@ import com.bravo.onlinestoreapi.entities.enums.EstadoPagamento;
 import com.bravo.onlinestoreapi.repositories.ItemPedidoRepository;
 import com.bravo.onlinestoreapi.repositories.PagamentoRepository;
 import com.bravo.onlinestoreapi.repositories.PedidoRepository;
+import com.bravo.onlinestoreapi.security.UserSS;
+import com.bravo.onlinestoreapi.services.exceptions.AuthorizationException;
 import com.bravo.onlinestoreapi.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class PedidoService {
 
     @Autowired
-    private PedidoRepository pedidoRepository;
+    private PedidoRepository repo;
 
     @Autowired
     private BoletoService boletoService;
@@ -27,10 +33,10 @@ public class PedidoService {
     private PagamentoRepository pagamentoRepository;
 
     @Autowired
-    private ProdutoService produtoService;
+    private ItemPedidoRepository itemPedidoRepository;
 
     @Autowired
-    private ItemPedidoRepository itemPedidoRepository;
+    private ProdutoService produtoService;
 
     @Autowired
     private ClienteService clienteService;
@@ -39,33 +45,41 @@ public class PedidoService {
     private EmailService emailService;
 
     public Pedido find(Integer id) {
-        return pedidoRepository.findById(id).orElseThrow(() ->
-                new ObjectNotFoundException("Objeto nao encontrado! Id: " + id +
-                        ", Tipo: " + Pedido.class.getName()));
+        Optional<Pedido> obj = repo.findById(id);
+        return obj.orElseThrow(() -> new ObjectNotFoundException(
+                "Objeto não encontrado! Id: " + id + ", Tipo: " + Pedido.class.getName()));
     }
 
-    @Transactional
-    public Pedido insert(Pedido pedido) {
-        pedido.setId(null);
-        pedido.setInstante(new Date());
-        pedido.setCliente(clienteService.find(pedido.getCliente().getId()));
-        pedido.getPagamento().setEstadoPagamento(EstadoPagamento.PENDENTE);
-        pedido.getPagamento().setPedido(pedido);
-        if (pedido.getPagamento() instanceof PagamentoComBoleto) {
-            PagamentoComBoleto pagto = (PagamentoComBoleto) pedido.getPagamento();
-            boletoService.prencherPagamentoComBoleto(pagto, pedido.getInstante());
+    public Pedido insert(Pedido obj) {
+        obj.setId(null);
+        obj.setInstante(new Date());
+        obj.setCliente(clienteService.find(obj.getCliente().getId()));
+        obj.getPagamento().setEstado(EstadoPagamento.PENDENTE);
+        obj.getPagamento().setPedido(obj);
+        if (obj.getPagamento() instanceof PagamentoComBoleto) {
+            PagamentoComBoleto pagto = (PagamentoComBoleto) obj.getPagamento();
+            boletoService.preencherPagamentoComBoleto(pagto, obj.getInstante());
         }
-        pedido = pedidoRepository.save(pedido);
-        pagamentoRepository.save(pedido.getPagamento());
-        for (ItemPedido ip : pedido.getItens()) {
+        obj = repo.save(obj);
+        pagamentoRepository.save(obj.getPagamento());
+        for (ItemPedido ip : obj.getItens()) {
             ip.setDesconto(0.0);
             ip.setProduto(produtoService.find(ip.getProduto().getId()));
             ip.setPreco(ip.getProduto().getPreco());
-            ip.setPedido(pedido);
+            ip.setPedido(obj);
         }
-        itemPedidoRepository.saveAll(pedido.getItens());
-        emailService.sendOrderConfirmationHtmlEmail(pedido);
-        return pedido;
+        itemPedidoRepository.saveAll(obj.getItens());
+        emailService.sendOrderConfirmationEmail(obj);
+        return obj;
     }
 
+    public Page<Pedido> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
+        UserSS user = UserService.authenticated();
+        if (user == null) {
+            throw new AuthorizationException("Acesso negado");
+        }
+        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+        Cliente cliente = clienteService.find(user.getId());
+        return repo.findByCliente(cliente, pageRequest);
+    }
 }

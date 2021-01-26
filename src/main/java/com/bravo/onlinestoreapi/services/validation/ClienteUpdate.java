@@ -1,4 +1,4 @@
-package com.bravo.onlinestoreapi.services.validartion;
+package com.bravo.onlinestoreapi.services.validation;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -8,12 +8,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Constraint(validatedBy = ClienteUpdateValidator.class)
-@Target({ ElementType.TYPE })
+@Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 
 public @interface ClienteUpdate {
-
-    String message() default "Error de validacao";
+    String message() default "Erro de validação";
 
     Class<?>[] groups() default {};
 

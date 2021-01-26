@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private ClienteRepository clienteRepository;
+    private ClienteRepository repo;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Cliente cliente = clienteRepository.findByEmail(email);
-        if (cliente == null) {
+        Cliente cli = repo.findByEmail(email);
+        if (cli == null) {
             throw new UsernameNotFoundException(email);
         }
-        return new UserSS(cliente.getId(), cliente.getEmail(), cliente.getSenha(), cliente.getPerfis());
+        return new UserSS(cli.getId(), cli.getEmail(), cli.getSenha(), cli.getPerfis());
     }
 }

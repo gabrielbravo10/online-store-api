@@ -38,18 +38,19 @@ public class JWTUtil {
         return false;
     }
 
+    public String getUsername(String token) {
+        Claims claims = getClaims(token);
+        if (claims != null) {
+            return claims.getSubject();
+        }
+        return null;
+    }
+
     private Claims getClaims(String token) {
         try {
             return Jwts.parser().setSigningKey(secret.getBytes()).parseClaimsJws(token).getBody();
         } catch (Exception e) {
             return null;
         }
-    }
-
-    public String getUsername(String token) {
-        Claims claims = getClaims(token);
-        if (claims != null)
-            return claims.getSubject();
-        return null;
     }
 }

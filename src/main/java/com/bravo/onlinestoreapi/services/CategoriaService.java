@@ -1,6 +1,6 @@
 package com.bravo.onlinestoreapi.services;
 
-import com.bravo.onlinestoreapi.dtos.CategoriaDto;
+import com.bravo.onlinestoreapi.dtos.CategoriaDTO;
 import com.bravo.onlinestoreapi.entities.Categoria;
 import com.bravo.onlinestoreapi.repositories.CategoriaRepository;
 import com.bravo.onlinestoreapi.services.exceptions.DataIntegrityException;
@@ -9,57 +9,58 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoriaService {
 
     @Autowired
-    private CategoriaRepository categoriaRepository;
-
-    public List<Categoria> findAll() {
-        return categoriaRepository.findAll();
-    }
-
-    public Page<Categoria> findPage(Integer page, Integer linesPerPage, String direction, String orderBy) {
-        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
-        return categoriaRepository.findAll(pageRequest);
-    }
+    private CategoriaRepository repo;
 
     public Categoria find(Integer id) {
-        return categoriaRepository.findById(id).orElseThrow(() ->
-                new ObjectNotFoundException("Objeto nao encontrado! Id: " + id +
-                        ", Tipo: " + Categoria.class.getName()));
+        Optional<Categoria> obj = repo.findById(id);
+        return obj.orElseThrow(() -> new ObjectNotFoundException(
+                "Objeto não encontrado! Id: " + id + ", Tipo: " + Categoria.class.getName()));
     }
 
-    public Categoria insert(Categoria categoria) {
-        categoria.setId(null);
-        return categoriaRepository.save(categoria);
+    public Categoria insert(Categoria obj) {
+        obj.setId(null);
+        return repo.save(obj);
     }
 
-    public Categoria update(Categoria categoria) {
-        Categoria newCategoria = find(categoria.getId());
-        updateCategoria(newCategoria, categoria);
-        return categoriaRepository.save(newCategoria);
+    public Categoria update(Categoria obj) {
+        Categoria newObj = find(obj.getId());
+        updateData(newObj, obj);
+        return repo.save(newObj);
     }
 
     public void delete(Integer id) {
         find(id);
         try {
-            categoriaRepository.deleteById(id);
-        } catch (DataIntegrityViolationException exception) {
-            throw new DataIntegrityException("Nao e possivel excluir uma categoria que possui produtos");
+            repo.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DataIntegrityException("Não é possível excluir uma categoria que possui produtos");
         }
     }
 
-    public Categoria dtoToCategoria(CategoriaDto categoriaDto) {
-        return new Categoria(categoriaDto.getId(), categoriaDto.getNome());
+    public List<Categoria> findAll() {
+        return repo.findAll();
     }
 
-    private void updateCategoria(Categoria newCategoria, Categoria categoria) {
-        newCategoria.setNome(categoria.getNome());
+    public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
+        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+        return repo.findAll(pageRequest);
+    }
+
+    public Categoria fromDTO(CategoriaDTO objDto) {
+        return new Categoria(objDto.getId(), objDto.getNome());
+    }
+
+    private void updateData(Categoria newObj, Categoria obj) {
+        newObj.setNome(obj.getNome());
     }
 }

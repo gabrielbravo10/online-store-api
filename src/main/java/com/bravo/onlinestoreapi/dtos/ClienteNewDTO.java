@@ -1,6 +1,6 @@
 package com.bravo.onlinestoreapi.dtos;
 
-import com.bravo.onlinestoreapi.services.validartion.ClienteInsert;
+import com.bravo.onlinestoreapi.services.validation.ClienteInsert;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
@@ -8,39 +8,39 @@ import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
 @ClienteInsert
-public class ClienteNewDto implements Serializable {
+public class ClienteNewDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @NotEmpty(message = "Prenchimento obrigatorio")
+    @NotEmpty(message = "Preenchimento obrigatório")
     @Length(min = 5, max = 120, message = "O tamanho deve ser entre 5 e 120 caracteres")
     private String nome;
 
-    @NotEmpty(message = "Prenchimento obrigatorio")
-    @Email(message = "email invalido")
+    @NotEmpty(message = "Preenchimento obrigatório")
+    @Email(message = "Email inválido")
     private String email;
 
-    @NotEmpty(message = "Prenchimento obrigatorio")
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String cpfOuCnpj;
 
-    private Integer tipoCliente;
+    private Integer tipo;
 
-    @NotEmpty(message = "Prenchimento obrigatorio")
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String senha;
 
-    @NotEmpty(message = "Prenchimento obrigatorio")
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String logradouro;
 
-    @NotEmpty(message = "Prenchimento obrigatorio")
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String numero;
 
     private String complemento;
 
     private String bairro;
 
-    @NotEmpty(message = "Prenchimento obrigatorio")
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String cep;
 
-    @NotEmpty(message = "Prenchimento obrigatorio")
+    @NotEmpty(message = "Preenchimento obrigatório")
     private String telefone1;
 
     private String telefone2;
@@ -49,7 +49,7 @@ public class ClienteNewDto implements Serializable {
 
     private Integer cidadeId;
 
-    public ClienteNewDto() {
+    public ClienteNewDTO() {
     }
 
     public String getNome() {
@@ -76,20 +76,12 @@ public class ClienteNewDto implements Serializable {
         this.cpfOuCnpj = cpfOuCnpj;
     }
 
-    public Integer getTipoCliente() {
-        return tipoCliente;
+    public Integer getTipo() {
+        return tipo;
     }
 
-    public void setTipoCliente(Integer tipoCliente) {
-        this.tipoCliente = tipoCliente;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
+    public void setTipo(Integer tipo) {
+        this.tipo = tipo;
     }
 
     public String getLogradouro() {
@@ -162,5 +154,13 @@ public class ClienteNewDto implements Serializable {
 
     public void setCidadeId(Integer cidadeId) {
         this.cidadeId = cidadeId;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }

@@ -1,11 +1,12 @@
 package com.bravo.onlinestoreapi.controllers;
 
-import com.bravo.onlinestoreapi.dtos.CategoriaDto;
+import com.bravo.onlinestoreapi.dtos.CategoriaDTO;
 import com.bravo.onlinestoreapi.entities.Categoria;
 import com.bravo.onlinestoreapi.services.CategoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -19,57 +20,55 @@ import java.util.stream.Collectors;
 public class CategoriaController {
 
     @Autowired
-    private CategoriaService categoriaService;
-
-    @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<CategoriaDto>> findAll() {
-        List<Categoria> categorias = categoriaService.findAll();
-        List<CategoriaDto> categoriaDtos = categorias.stream().map
-                (cat -> new CategoriaDto(cat)).collect(Collectors.toList());
-        return ResponseEntity.ok().body(categoriaDtos);
-    }
-
-    @RequestMapping(value = "/page", method = RequestMethod.GET)
-    public ResponseEntity<Page<CategoriaDto>> findPage(
-            @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "linesPerPage", defaultValue = "24") Integer linesPerPage,
-            @RequestParam(value = "direction", defaultValue = "ASC") String direction,
-            @RequestParam(value = "orderBy", defaultValue = "nome") String orderBy
-    ) {
-        Page<Categoria> categorias = categoriaService.findPage(page, linesPerPage, direction, orderBy);
-        Page<CategoriaDto> categoriaDtos = categorias.map(cat -> new CategoriaDto(cat));
-        return ResponseEntity.ok().body(categoriaDtos);
-    }
+    private CategoriaService service;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity<Categoria> find(@PathVariable Integer id) {
-
-        Categoria categoria = categoriaService.find(id);
-        return ResponseEntity.ok().body(categoria);
-
+        Categoria obj = service.find(id);
+        return ResponseEntity.ok().body(obj);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Void> insert(@Valid @RequestBody CategoriaDto categoriaDto) {
-        Categoria categoria = categoriaService.dtoToCategoria(categoriaDto);
-        categoria = categoriaService.insert(categoria);
+    public ResponseEntity<Void> insert(@Valid @RequestBody CategoriaDTO objDto) {
+        Categoria obj = service.fromDTO(objDto);
+        obj = service.insert(obj);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}").buildAndExpand(categoriaDto.getId()).toUri();
-
+                .path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Void> update(@Valid @RequestBody CategoriaDto categoriaDto, @PathVariable Integer id) {
-        Categoria categoria = categoriaService.dtoToCategoria(categoriaDto);
-        categoria.setId(id);
-        categoria = categoriaService.update(categoria);
+    public ResponseEntity<Void> update(@Valid @RequestBody CategoriaDTO objDto, @PathVariable Integer id) {
+        Categoria obj = service.fromDTO(objDto);
+        obj.setId(id);
+        obj = service.update(obj);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        categoriaService.delete(id);
+        service.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<List<CategoriaDTO>> findAll() {
+        List<Categoria> list = service.findAll();
+        List<CategoriaDTO> listDto = list.stream().map(obj -> new CategoriaDTO(obj)).collect(Collectors.toList());
+        return ResponseEntity.ok().body(listDto);
+    }
+
+    @RequestMapping(value = "/page", method = RequestMethod.GET)
+    public ResponseEntity<Page<CategoriaDTO>> findPage(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "linesPerPage", defaultValue = "24") Integer linesPerPage,
+            @RequestParam(value = "orderBy", defaultValue = "nome") String orderBy,
+            @RequestParam(value = "direction", defaultValue = "ASC") String direction) {
+        Page<Categoria> list = service.findPage(page, linesPerPage, orderBy, direction);
+        Page<CategoriaDTO> listDto = list.map(obj -> new CategoriaDTO(obj));
+        return ResponseEntity.ok().body(listDto);
     }
 }

@@ -6,11 +6,13 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 @Entity
 public class Pedido implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -38,6 +40,7 @@ public class Pedido implements Serializable {
     }
 
     public Pedido(Integer id, Date instante, Cliente cliente, Endereco enderecoDeEntrega) {
+        super();
         this.id = id;
         this.instante = instante;
         this.cliente = cliente;
@@ -47,7 +50,7 @@ public class Pedido implements Serializable {
     public double getValorTotal() {
         double soma = 0.0;
         for (ItemPedido ip : itens) {
-            soma += ip.getSubTotal();
+            soma = soma + ip.getSubTotal();
         }
         return soma;
     }
@@ -101,37 +104,49 @@ public class Pedido implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Pedido pedido = (Pedido) o;
-        return Objects.equals(id, pedido.id);
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Pedido other = (Pedido) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
     }
 
     @Override
     public String toString() {
         NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        StringBuilder sb = new StringBuilder();
-        sb.append("Pedido numero: ");
-        sb.append(getId());
-        sb.append(", Instante: ");
-        sb.append(sdf.format(getInstante()));
-        sb.append(", Cliente: ");
-        sb.append(getCliente().getNome());
-        sb.append(", Situacao do pagamento: ");
-        sb.append(getPagamento().getEstadoPagamento().getDescricao());
-        sb.append("\nDetalhes:\n");
+        StringBuilder builder = new StringBuilder();
+        builder.append("Pedido número: ");
+        builder.append(getId());
+        builder.append(", Instante: ");
+        builder.append(sdf.format(getInstante()));
+        builder.append(", Cliente: ");
+        builder.append(getCliente().getNome());
+        builder.append(", Situação do pagamento: ");
+        builder.append(getPagamento().getEstado().getDescricao());
+        builder.append("\nDetalhes:\n");
         for (ItemPedido ip : getItens()) {
-            sb.append(ip.toString());
+            builder.append(ip.toString());
         }
-        sb.append("Valor total: ");
-        sb.append(nf.format(getValorTotal()));
-        return sb.toString();
+        builder.append("Valor total: ");
+        builder.append(nf.format(getValorTotal()));
+        return builder.toString();
     }
 }

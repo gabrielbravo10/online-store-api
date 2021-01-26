@@ -1,25 +1,22 @@
 package com.bravo.onlinestoreapi.dtos;
 
-import com.bravo.onlinestoreapi.entities.Produto;
+import com.bravo.onlinestoreapi.entities.Estado;
 
 import java.io.Serializable;
 
-public class ProdutoDto implements Serializable {
+public class EstadoDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Integer id;
     private String nome;
-    private Double preco;
 
-    public ProdutoDto() {
+    public EstadoDTO() {
     }
 
-    public ProdutoDto(Produto produto) {
-        id = produto.getId();
-        nome = produto.getNome();
-        preco = produto.getPreco();
+    public EstadoDTO(Estado obj) {
+        id = obj.getId();
+        nome = obj.getNome();
     }
-
 
     public Integer getId() {
         return id;
@@ -35,13 +32,5 @@ public class ProdutoDto implements Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public Double getPreco() {
-        return preco;
-    }
-
-    public void setPreco(Double preco) {
-        this.preco = preco;
     }
 }

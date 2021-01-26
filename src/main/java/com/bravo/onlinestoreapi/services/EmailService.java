@@ -1,17 +1,14 @@
 package com.bravo.onlinestoreapi.services;
 
+import com.bravo.onlinestoreapi.entities.Cliente;
 import com.bravo.onlinestoreapi.entities.Pedido;
 import org.springframework.mail.SimpleMailMessage;
 
-import javax.mail.internet.MimeMessage;
-
 public interface EmailService {
 
-    void sendOrderConfirmationEmail(Pedido pedido);
+    void sendOrderConfirmationEmail(Pedido obj);
 
-    void sendEmail(SimpleMailMessage simpleMailMessage);
+    void sendEmail(SimpleMailMessage msg);
 
-    void sendOrderConfirmationHtmlEmail(Pedido pedido);
-
-    void sendHtmlEmail(MimeMessage mimeMessage);
+    void sendNewPasswordEmail(Cliente cliente, String newPass);
 }
